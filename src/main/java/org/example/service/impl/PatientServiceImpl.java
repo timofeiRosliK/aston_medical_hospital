@@ -11,13 +11,9 @@ import java.util.Optional;
 
 public class PatientServiceImpl implements PatientService {
     private final PatientDao patientDao;
-    private final DoctorDao doctorDao;
-    private final DiagnosisDao diagnosisDao;
 
-    public PatientServiceImpl(PatientDao patientDao, DoctorDao doctorDao, DiagnosisDao diagnosisDao) {
+    public PatientServiceImpl(PatientDao patientDao) {
         this.patientDao = patientDao;
-        this.doctorDao = doctorDao;
-        this.diagnosisDao = diagnosisDao;
     }
 
     @Override
@@ -28,14 +24,14 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Patient getPatientById(int id) {
         return Optional.of(patientDao.getPatientById(id))
-                .orElseThrow(() ->new PatientNotFoundException("Patient is not found"));
+                .orElseThrow(() -> new PatientNotFoundException("Patient is not found"));
     }
 
     @Override
     public Patient updatePatientById(int id, int doctorId, int diagnosisID, Patient patient) {
         Patient patientFromDb = getPatientById(id);
 
-        if(patientFromDb == null){
+        if (patientFromDb == null) {
             throw new PatientNotFoundException("Patient is not found");
         }
 
@@ -46,7 +42,7 @@ public class PatientServiceImpl implements PatientService {
     public void removePatient(int id) {
         Patient patientFromDb = getPatientById(id);
 
-        if(patientFromDb == null){
+        if (patientFromDb == null) {
             throw new PatientNotFoundException("Patient is not found");
         }
 

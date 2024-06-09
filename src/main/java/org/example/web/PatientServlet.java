@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 @WebServlet("/patients")
 public class PatientServlet extends HttpServlet {
     private PatientMapper patientMapper = PatientMapper.INSTANCE;
-    private PatientService patientService = new PatientServiceImpl(new PatientDaoImpl(), new DoctorDaoImpl(), new DiagnosisDaoImpl());
+    private PatientService patientService = new PatientServiceImpl(new PatientDaoImpl());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
