@@ -21,26 +21,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Testcontainers
 public class DoctorDaoImplTest {
     @Container
-    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0.33")
+    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass");
+            .withPassword("testpass")
+            .withExposedPorts(3306);
 
-    private static Connection connection;
+    private static DoctorDaoImpl doctorDao;
 
     @BeforeAll
     public static void setUp() throws SQLException {
         mysqlContainer.start();
         DataSource.init(mysqlContainer.getJdbcUrl(), mysqlContainer.getUsername(), mysqlContainer.getPassword());
-        connection = DataSource.getConnection();
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE doctors ("
-                    + "doctor_id INT PRIMARY KEY AUTO_INCREMENT, "
-                    + "first_name VARCHAR(50), "
-                    + "last_name VARCHAR(50), "
-                    + "specialization VARCHAR(50))");
-        }
+        doctorDao = new DoctorDaoImpl();
+        createTables();
     }
 
     @BeforeEach
@@ -58,9 +52,21 @@ public class DoctorDaoImplTest {
         mysqlContainer.stop();
     }
 
+    private static void createTables() {
+        try (Connection connection = DataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE doctors ("
+                    + "doctor_id INT PRIMARY KEY AUTO_INCREMENT, "
+                    + "first_name VARCHAR(50), "
+                    + "last_name VARCHAR(50), "
+                    + "specialization VARCHAR(50))");
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     void testSaveDoctor() {
-        DoctorDaoImpl doctorDao = new DoctorDaoImpl();
         Doctor doctor = new Doctor(0, "John", "Doe", "Cardiology");
 
         int savedId = doctorDao.saveDoctor(doctor);
@@ -74,7 +80,6 @@ public class DoctorDaoImplTest {
 
     @Test
     void testGetDoctorById() {
-        DoctorDaoImpl doctorDao = new DoctorDaoImpl();
         Doctor doctor = new Doctor(0, "Jane", "Smith", "Neurology");
 
         int savedId = doctorDao.saveDoctor(doctor);
@@ -88,7 +93,6 @@ public class DoctorDaoImplTest {
 
     @Test
     void testUpdateDoctorById() {
-        DoctorDaoImpl doctorDao = new DoctorDaoImpl();
         Doctor doctor = new Doctor(0, "Jake", "Wilson", "Orthopedics");
 
         int savedId = doctorDao.saveDoctor(doctor);
@@ -105,7 +109,6 @@ public class DoctorDaoImplTest {
 
     @Test
     void testRemoveDoctor() {
-        DoctorDaoImpl doctorDao = new DoctorDaoImpl();
         Doctor doctor = new Doctor(0, "Mike", "Johnson", "Dermatology");
 
         doctorDao.saveDoctor(doctor);

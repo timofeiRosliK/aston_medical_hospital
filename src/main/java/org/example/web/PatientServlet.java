@@ -1,7 +1,5 @@
 package org.example.web;
 
-import org.example.dao.impl.DiagnosisDaoImpl;
-import org.example.dao.impl.DoctorDaoImpl;
 import org.example.dao.impl.PatientDaoImpl;
 import org.example.dto.PatientCreateDto;
 import org.example.dto.PatientResponseDto;

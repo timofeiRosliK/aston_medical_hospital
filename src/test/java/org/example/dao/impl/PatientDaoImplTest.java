@@ -1,8 +1,6 @@
 package org.example.dao.impl;
 
 import org.example.config.DataSource;
-import org.example.model.Diagnosis;
-import org.example.model.Doctor;
 import org.example.model.Gender;
 import org.example.model.Patient;
 import org.junit.jupiter.api.AfterAll;
@@ -14,7 +12,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -25,38 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Testcontainers
 class PatientDaoImplTest {
     @Container
-    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0.33")
+    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass");
+            .withPassword("testpass")
+            .withExposedPorts(3306);
 
-    private static Connection connection;
+    private static PatientDaoImpl patientDao;
 
     @BeforeAll
     public static void setUp() throws SQLException {
         mysqlContainer.start();
         DataSource.init(mysqlContainer.getJdbcUrl(), mysqlContainer.getUsername(), mysqlContainer.getPassword());
-        connection = DataSource.getConnection();
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE patients ("
-                    + "patient_id INT PRIMARY KEY AUTO_INCREMENT, "
-                    + "first_name VARCHAR(50), "
-                    + "last_name VARCHAR(50), "
-                    + "gender VARCHAR(10), "
-                    + "doctor_id INT, "
-                    + "diagnosis_id INT)");
-
-            statement.execute("CREATE TABLE doctors ("
-                    + "doctor_id INT PRIMARY KEY AUTO_INCREMENT, "
-                    + "first_name VARCHAR(50), "
-                    + "last_name VARCHAR(50), "
-                    + "specialization VARCHAR(50))");
-
-            statement.execute("CREATE TABLE diagnoses ("
-                    + "diagnosis_id INT PRIMARY KEY AUTO_INCREMENT, "
-                    + "diagnosis_name VARCHAR(50))");
-        }
+        patientDao = new PatientDaoImpl();
+        createTables();
     }
 
     @BeforeEach
@@ -76,9 +55,33 @@ class PatientDaoImplTest {
         mysqlContainer.stop();
     }
 
+    private static void createTables() {
+        try (Connection connection = DataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE patients ("
+                    + "patient_id INT PRIMARY KEY AUTO_INCREMENT, "
+                    + "first_name VARCHAR(50), "
+                    + "last_name VARCHAR(50), "
+                    + "gender VARCHAR(5), "
+                    + "doctor_id INT, "
+                    + "diagnosis_id INT)");
+
+            statement.execute("CREATE TABLE doctors ("
+                    + "doctor_id INT PRIMARY KEY AUTO_INCREMENT, "
+                    + "first_name VARCHAR(50), "
+                    + "last_name VARCHAR(50), "
+                    + "specialization VARCHAR(50))");
+
+            statement.execute("CREATE TABLE diagnoses ("
+                    + "diagnosis_id INT PRIMARY KEY AUTO_INCREMENT, "
+                    + "diagnosis_name VARCHAR(255))");
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     void testSavePatient() {
-        PatientDaoImpl patientDao = new PatientDaoImpl();
         Patient patient = new Patient(0, "John", "Doe", Gender.MAN);
 
         int id = patientDao.savePatient(patient);
@@ -92,7 +95,6 @@ class PatientDaoImplTest {
 
     @Test
     void testGetPatientById() {
-        PatientDaoImpl patientDao = new PatientDaoImpl();
         Patient patient = new Patient(0, "Jane", "Smith", Gender.WOMAN);
 
         int id = patientDao.savePatient(patient);
@@ -106,7 +108,6 @@ class PatientDaoImplTest {
 
     @Test
     void testUpdatePatientById() {
-        PatientDaoImpl patientDao = new PatientDaoImpl();
         Patient patient = new Patient(0, "Jake", "Wilson", Gender.MAN);
 
         int id = patientDao.savePatient(patient);
@@ -123,7 +124,6 @@ class PatientDaoImplTest {
 
     @Test
     void testRemovePatient() {
-        PatientDaoImpl patientDao = new PatientDaoImpl();
         Patient patient = new Patient(0, "Mike", "Johnson", Gender.WOMAN);
 
         int id = patientDao.savePatient(patient);

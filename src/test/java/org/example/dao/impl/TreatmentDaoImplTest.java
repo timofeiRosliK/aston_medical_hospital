@@ -11,7 +11,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -21,32 +20,39 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 class TreatmentDaoImplTest {
     @Container
-    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0.33")
+    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass");
+            .withPassword("testpass")
+            .withExposedPorts(3306);
 
-    private static Connection connection;
+    private static TreatmentDaoImpl treatmentDao;
 
     @BeforeAll
     public static void setUp() throws SQLException {
         mysqlContainer.start();
         DataSource.init(mysqlContainer.getJdbcUrl(), mysqlContainer.getUsername(), mysqlContainer.getPassword());
-        connection = DataSource.getConnection();
+        treatmentDao = new TreatmentDaoImpl();
+        createTables();
+    }
 
-        try (Statement statement = connection.createStatement()) {
+    private static void createTables(){
+        try (Connection connection = DataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE treatments ("
                     + "treatment_id INT PRIMARY KEY AUTO_INCREMENT, "
                     + "treatment_name VARCHAR(50))");
 
             statement.execute("CREATE TABLE diagnoses ("
                     + "diagnosis_id INT PRIMARY KEY AUTO_INCREMENT, "
-                    + "diagnosis_name VARCHAR(50))");
+                    + "diagnosis_name VARCHAR(255))");
 
             statement.execute("CREATE TABLE diagnoses_treatments ("
                     + "diagnosis_id INT, "
                     + "treatment_id INT, "
                     + "PRIMARY KEY (diagnosis_id, treatment_id))");
+        }catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -69,7 +75,6 @@ class TreatmentDaoImplTest {
 
     @Test
     void testSaveTreatment() {
-        TreatmentDaoImpl treatmentDao = new TreatmentDaoImpl();
         Treatment treatment = new Treatment("Physical Therapy");
 
         int id = treatmentDao.saveTreatment(treatment);
@@ -81,7 +86,6 @@ class TreatmentDaoImplTest {
 
     @Test
     void testGetTreatmentById() {
-        TreatmentDaoImpl treatmentDao = new TreatmentDaoImpl();
         Treatment treatment = new Treatment("Chemotherapy");
 
         int id = treatmentDao.saveTreatment(treatment);
@@ -93,7 +97,6 @@ class TreatmentDaoImplTest {
 
     @Test
     void testUpdateTreatmentById() {
-        TreatmentDaoImpl treatmentDao = new TreatmentDaoImpl();
         Treatment treatment = new Treatment("Radiation Therapy");
 
         int id = treatmentDao.saveTreatment(treatment);
@@ -108,7 +111,6 @@ class TreatmentDaoImplTest {
 
     @Test
     void testRemoveTreatment() {
-        TreatmentDaoImpl treatmentDao = new TreatmentDaoImpl();
         Treatment treatment = new Treatment("Immunotherapy");
 
         int id = treatmentDao.saveTreatment(treatment);
@@ -120,9 +122,8 @@ class TreatmentDaoImplTest {
 
     @Test
     void testGetAllTreatmentByDiagnosisId() {
-        TreatmentDaoImpl treatmentDao = new TreatmentDaoImpl();
-
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = DataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO diagnoses (diagnosis_name) VALUES ('Cancer')");
         } catch (SQLException e) {
             fail("Failed to insert diagnosis");
@@ -135,7 +136,8 @@ class TreatmentDaoImplTest {
         int treatmentId1 = treatmentDao.saveTreatment(treatment1);
         int treatmentId2 = treatmentDao.saveTreatment(treatment2);
 
-        try (var statement = connection.createStatement()) {
+        try (Connection connection = DataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO diagnoses_treatments (diagnosis_id, treatment_id) VALUES (" + diagnosisId + ", " + treatmentId1 + ")");
             statement.execute("INSERT INTO diagnoses_treatments (diagnosis_id, treatment_id) VALUES (" + diagnosisId + ", " + treatmentId2 + ")");
         } catch (SQLException e) {

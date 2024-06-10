@@ -1,17 +1,13 @@
 package org.example.dao.impl;
 
 import org.example.config.DataSource;
-import org.example.dao.impl.DiagnosisDaoImpl;
 import org.example.model.Diagnosis;
 import org.example.model.Treatment;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -20,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,7 +65,7 @@ public class DiagnosisDaoImplTest {
                     ")");
             statement.execute("CREATE TABLE treatments (" +
                     "treatment_id INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "treatment_name VARCHAR(255) NOT NULL" +
+                    "treatment_name VARCHAR(50) NOT NULL" +
                     ")");
             statement.execute("CREATE TABLE diagnoses_treatments (" +
                     "diagnosis_id INT, " +
