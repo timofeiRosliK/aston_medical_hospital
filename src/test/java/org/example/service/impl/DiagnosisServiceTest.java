@@ -22,7 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DiagnosisServiceTest {
+ class DiagnosisServiceTest {
     private Diagnosis diagnosis;
     private Treatment treatment;
     private List<Treatment> treatments;
@@ -52,7 +52,6 @@ public class DiagnosisServiceTest {
     @Test
     void save_WhenSaveDiagnosisInDb_ShouldDiagnosisSaved() {
         diagnosisService.saveDiagnosis(diagnosis);
-
         verify(diagnosisDao).saveDiagnosis(diagnosis);
     }
 

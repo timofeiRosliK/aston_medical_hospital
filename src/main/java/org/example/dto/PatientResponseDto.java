@@ -14,6 +14,13 @@ public class PatientResponseDto {
 
     }
 
+    public PatientResponseDto(int id, String firstName, String lastName, Gender gender) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+    }
+
     public PatientResponseDto(int id, String firstName, String lastName, Gender gender, DoctorResponseDto doctor, DiagnosisResponseDto diagnosis) {
         this.id = id;
         this.firstName = firstName;

@@ -73,7 +73,7 @@ public class PatientServlet extends HttpServlet {
         patientService.removePatient(id);
 
         PrintWriter writer = resp.getWriter();
-        writer.println("Patient with id = " + id + " is removed ");
+        writer.println("The patient with id = " + id + " is removed");
 
         resp.setStatus(204);
 

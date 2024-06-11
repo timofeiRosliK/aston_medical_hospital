@@ -34,7 +34,7 @@ public class DoctorServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         writer.println(WebUtil.getObjectMapper().writeValueAsString(response));
 
-        resp.setStatus(201);
+        resp.setStatus(200);
     }
 
 
