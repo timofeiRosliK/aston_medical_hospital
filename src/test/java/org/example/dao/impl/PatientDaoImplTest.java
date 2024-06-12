@@ -22,11 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Testcontainers
 class PatientDaoImplTest {
     @Container
-    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
+    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.0")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass")
-            .withExposedPorts(3306);
+            .withPassword("testpass");
 
     private static PatientDaoImpl patientDao;
 

@@ -21,7 +21,7 @@
         <junit.platform.version>1.9.1</junit.platform.version>
         <mockito.version>5.11.0</mockito.version>
         <mockito.inline.version>4.11.0</mockito.inline.version>
-        <testcontainer.version>1.17.6</testcontainer.version>
+        <testcontainer.version>1.19.8</testcontainer.version>
         <slf4j.version>1.7.36</slf4j.version>
         <slf4j.simple.version>1.7.36</slf4j.simple.version>
 
@@ -119,6 +119,12 @@
         </dependency>
 
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mysql</artifactId>
             <version>${testcontainer.version}</version>
@@ -129,6 +135,7 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainer.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -154,8 +161,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>15</source>
-                    <target>15</target>
+                    <source>17</source>
+                    <target>17</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>

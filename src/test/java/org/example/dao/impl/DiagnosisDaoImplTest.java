@@ -23,11 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DiagnosisDaoImplTest {
 
     @Container
-    public static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
+    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.0")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass")
-            .withExposedPorts(3306);
+            .withPassword("testpass");
 
     private static DiagnosisDaoImpl diagnosisDao;
 
@@ -84,7 +83,7 @@ public class DiagnosisDaoImplTest {
         diagnosisDao.saveDiagnosis(diagnosis);
         List<Diagnosis> allDiagnoses = diagnosisDao.getAllDiagnoses();
         assertNotNull(allDiagnoses);
-        assertEquals(allDiagnoses.size(), 1);
+        assertEquals(1, allDiagnoses.size());
     }
 
     @Test

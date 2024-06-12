@@ -20,11 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 class TreatmentDaoImplTest {
     @Container
-    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
+    private static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.4.0")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass")
-            .withExposedPorts(3306);
+            .withPassword("testpass");
 
     private static TreatmentDaoImpl treatmentDao;
 
