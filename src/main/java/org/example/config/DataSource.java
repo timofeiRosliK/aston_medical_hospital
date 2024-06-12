@@ -12,23 +12,20 @@ import java.util.logging.Logger;
 
 public class DataSource {
     private static final Logger LOGGER = Logger.getLogger(DataSource.class.getName());
-    private static HikariConfig config = new HikariConfig();
+    private static HikariConfig config;
     private static HikariDataSource ds;
 
-    static {
+    public static void initFromProperties(String propertiesFile) {
         Properties properties = new Properties();
-
         try {
-            properties.load(DataSource.class.getClassLoader().getResourceAsStream("db.properties"));
+            properties.load(DataSource.class.getClassLoader().getResourceAsStream(propertiesFile));
+            String url = properties.getProperty("db.url");
+            String username = properties.getProperty("db.userName");
+            String password = properties.getProperty("db.password");
+            init(url, username, password);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "A load exception", e);
         }
-        config.setJdbcUrl(properties.getProperty("db.url"));
-        config.setUsername(properties.getProperty("db.userName"));
-        config.setPassword(properties.getProperty("db.password"));
-        config.setMaximumPoolSize(10);
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        ds = new HikariDataSource( config );
     }
 
     public static void init(String url, String username, String password) {
@@ -40,6 +37,8 @@ public class DataSource {
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         ds = new HikariDataSource( config );
     }
+
+
 
     private DataSource() {}
 
